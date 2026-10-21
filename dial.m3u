@@ -1,0 +1,25 @@
+#EXTM3U url-tvg="https://nejatboy.github.io/Dial-Demo/xmltv.xml.gz"
+#EXTINF:-1 tvg-id="metro-news" tvg-name="Metro News" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/metro-news.png" group-title="News",Metro News
+https://nejatboy.github.io/Dial-Demo/live/metro-news/index.m3u8
+#EXTINF:-1 tvg-id="world-report" tvg-name="World Report" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/world-report.png" group-title="News",World Report
+https://nejatboy.github.io/Dial-Demo/live/world-report/index.m3u8
+#EXTINF:-1 tvg-id="arena-sports" tvg-name="Arena Sports" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/arena-sports.png" group-title="Sports",Arena Sports
+https://nejatboy.github.io/Dial-Demo/live/arena-sports/index.m3u8
+#EXTINF:-1 tvg-id="goal-tv" tvg-name="Goal TV" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/goal-tv.png" group-title="Sports",Goal TV
+https://nejatboy.github.io/Dial-Demo/live/goal-tv/index.m3u8
+#EXTINF:-1 tvg-id="nature-one" tvg-name="Nature One" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/nature-one.png" group-title="Documentary",Nature One
+https://nejatboy.github.io/Dial-Demo/live/nature-one/index.m3u8
+#EXTINF:-1 tvg-id="explorer" tvg-name="Explorer" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/explorer.png" group-title="Documentary",Explorer
+https://nejatboy.github.io/Dial-Demo/live/explorer/index.m3u8
+#EXTINF:-1 tvg-id="kids-club" tvg-name="Kids Club" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/kids-club.png" group-title="Kids",Kids Club
+https://nejatboy.github.io/Dial-Demo/live/kids-club/index.m3u8
+#EXTINF:-1 tvg-id="pulse-music" tvg-name="Pulse Music" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/pulse-music.png" group-title="Music",Pulse Music
+https://nejatboy.github.io/Dial-Demo/live/pulse-music/index.m3u8
+#EXTINF:-1 tvg-name="Big Buck Bunny (2008)" tvg-logo="https://nejatboy.github.io/Dial-Demo/movies/big-buck-bunny.jpg" group-title="Open Movies",Big Buck Bunny (2008)
+https://nejatboy.github.io/Dial-Demo/movies/big-buck-bunny.mp4
+#EXTINF:-1 tvg-name="Elephants Dream (2006)" tvg-logo="https://nejatboy.github.io/Dial-Demo/movies/elephants-dream.jpg" group-title="Open Movies",Elephants Dream (2006)
+https://nejatboy.github.io/Dial-Demo/movies/elephants-dream.mp4
+#EXTINF:-1 tvg-name="Sintel (2010)" tvg-logo="https://nejatboy.github.io/Dial-Demo/movies/sintel.jpg" group-title="Open Movies",Sintel (2010)
+https://nejatboy.github.io/Dial-Demo/movies/sintel.mp4
+#EXTINF:-1 tvg-name="Tears of Steel (2012)" tvg-logo="https://nejatboy.github.io/Dial-Demo/movies/tears-of-steel.jpg" group-title="Open Movies",Tears of Steel (2012)
+https://nejatboy.github.io/Dial-Demo/movies/tears-of-steel.mp4
