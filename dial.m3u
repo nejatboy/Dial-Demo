@@ -11,6 +11,22 @@ https://nejatboy.github.io/Dial-Demo/live/goal-tv/index.m3u8
 https://nejatboy.github.io/Dial-Demo/live/nature-one/index.m3u8
 #EXTINF:-1 tvg-id="explorer" tvg-name="Explorer" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/explorer.png" group-title="Documentary",Explorer
 https://nejatboy.github.io/Dial-Demo/live/explorer/index.m3u8
+#EXTINF:-1 tvg-id="daily-brief" tvg-name="Daily Brief" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/daily-brief.png" group-title="News",Daily Brief
+https://nejatboy.github.io/Dial-Demo/live/daily-brief/index.m3u8
+#EXTINF:-1 tvg-id="capital-24" tvg-name="Capital 24" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/capital-24.png" group-title="News",Capital 24
+https://nejatboy.github.io/Dial-Demo/live/capital-24/index.m3u8
+#EXTINF:-1 tvg-id="track-field" tvg-name="Track & Field" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/track-field.png" group-title="Sports",Track & Field
+https://nejatboy.github.io/Dial-Demo/live/track-field/index.m3u8
+#EXTINF:-1 tvg-id="motor-live" tvg-name="Motor Live" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/motor-live.png" group-title="Sports",Motor Live
+https://nejatboy.github.io/Dial-Demo/live/motor-live/index.m3u8
+#EXTINF:-1 tvg-id="history-lane" tvg-name="History Lane" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/history-lane.png" group-title="Documentary",History Lane
+https://nejatboy.github.io/Dial-Demo/live/history-lane/index.m3u8
+#EXTINF:-1 tvg-id="planet-wild" tvg-name="Planet Wild" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/planet-wild.png" group-title="Documentary",Planet Wild
+https://nejatboy.github.io/Dial-Demo/live/planet-wild/index.m3u8
+#EXTINF:-1 tvg-id="little-stars" tvg-name="Little Stars" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/little-stars.png" group-title="Kids",Little Stars
+https://nejatboy.github.io/Dial-Demo/live/little-stars/index.m3u8
+#EXTINF:-1 tvg-id="jazz-lounge" tvg-name="Jazz Lounge" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/jazz-lounge.png" group-title="Music",Jazz Lounge
+https://nejatboy.github.io/Dial-Demo/live/jazz-lounge/index.m3u8
 #EXTINF:-1 tvg-id="kids-club" tvg-name="Kids Club" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/kids-club.png" group-title="Kids",Kids Club
 https://nejatboy.github.io/Dial-Demo/live/kids-club/index.m3u8
 #EXTINF:-1 tvg-id="pulse-music" tvg-name="Pulse Music" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/pulse-music.png" group-title="Music",Pulse Music
