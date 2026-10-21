@@ -15,11 +15,11 @@ https://nejatboy.github.io/Dial-Demo/live/explorer/index.m3u8
 https://nejatboy.github.io/Dial-Demo/live/kids-club/index.m3u8
 #EXTINF:-1 tvg-id="pulse-music" tvg-name="Pulse Music" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/pulse-music.png" group-title="Music",Pulse Music
 https://nejatboy.github.io/Dial-Demo/live/pulse-music/index.m3u8
-#EXTINF:-1 tvg-name="Big Buck Bunny (2008)" tvg-logo="https://nejatboy.github.io/Dial-Demo/movies/big-buck-bunny.jpg" group-title="Open Movies",Big Buck Bunny (2008)
+#EXTINF:-1 tvg-name="Big Buck Bunny" tvg-logo="https://nejatboy.github.io/Dial-Demo/movies/big-buck-bunny.jpg" group-title="Open Movies",Big Buck Bunny
 https://nejatboy.github.io/Dial-Demo/movies/big-buck-bunny.mp4
-#EXTINF:-1 tvg-name="Elephants Dream (2006)" tvg-logo="https://nejatboy.github.io/Dial-Demo/movies/elephants-dream.jpg" group-title="Open Movies",Elephants Dream (2006)
+#EXTINF:-1 tvg-name="Elephants Dream" tvg-logo="https://nejatboy.github.io/Dial-Demo/movies/elephants-dream.jpg" group-title="Open Movies",Elephants Dream
 https://nejatboy.github.io/Dial-Demo/movies/elephants-dream.mp4
-#EXTINF:-1 tvg-name="Sintel (2010)" tvg-logo="https://nejatboy.github.io/Dial-Demo/movies/sintel.jpg" group-title="Open Movies",Sintel (2010)
+#EXTINF:-1 tvg-name="Sintel" tvg-logo="https://nejatboy.github.io/Dial-Demo/movies/sintel.jpg" group-title="Open Movies",Sintel
 https://nejatboy.github.io/Dial-Demo/movies/sintel.mp4
-#EXTINF:-1 tvg-name="Tears of Steel (2012)" tvg-logo="https://nejatboy.github.io/Dial-Demo/movies/tears-of-steel.jpg" group-title="Open Movies",Tears of Steel (2012)
+#EXTINF:-1 tvg-name="Tears of Steel" tvg-logo="https://nejatboy.github.io/Dial-Demo/movies/tears-of-steel.jpg" group-title="Open Movies",Tears of Steel
 https://nejatboy.github.io/Dial-Demo/movies/tears-of-steel.mp4
