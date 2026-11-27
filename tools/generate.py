@@ -20,7 +20,8 @@ Adımlar:  python3 tools/generate.py [adım …] [--only id,id]
   encode    filmler, bölümler, kanallar
   art       afişler, sahne görselleri, logolar (Chrome'un başsız moduyla)
   site      dial.m3u ve lisans sayfası (index.html)
-  upload    videoları GitHub Releases'a yükle (`gh`; adımlara dahil değil)
+  chunks    kanalların segmentlerinden 1 dk'lık TS parçaları (Xtream'in `.ts` canlısı; encode sonunda da çalışıyor)
+  upload    videoları GitHub Releases'a yükle (`gh`; adımlara dahil değil; sürümde olanlar atlanır, `--replace` ile yeniden)
   worker    Cloudflare Worker'ın kodu `worker/worker.js` (Xtream ucu, canlı HLS, yayın akışı; adresi DIAL_WORKER); kanalların parça
             süreleri `tools/segments.json`'dan (encode yazıyor), `build/` gerekmiyor
   sheets    afişin karesini seçmek için aday kareler (`build/sheets/`; adımlara dahil değil)
@@ -60,6 +61,12 @@ RELEASES = "https://github.com/nejatboy/Dial-Demo/releases/download"
 WORKER = os.environ.get("DIAL_WORKER", "https://dial-demo.njsoft.workers.dev")
 
 SEGMENT_SECONDS = 6
+# Logoların sürümü adreste (`logos/<kanal>.png?v=2`): uygulamalar logoları disk önbelleğinde tutuyor, yeni çizim playlist yenilenince gelsin.
+LOGO_VERSION = 2
+LOGOS = TOOLS / "logos"
+# Xtream'in `.ts` canlısı için segmentler 10'arlı (1 dk) parçalara birleşiyor: Worker'ın ücretsiz planında istek başına 50 alt istek var,
+# Releases'ın her dosyası yönlendirmeyle 2 sayılıyor; 6 sn'lik segmentlerle bir bağlantı ~2,5 dk, 1 dk'lık parçalarla ~25 dk sürüyor.
+CHUNK_SEGMENTS = 10
 
 # Grupların rengi (logolar ve afişlerin etiketi); uygulamanın koyu zemininde okunan, birbirinden ayrılan tonlar.
 GROUP_COLORS = {
@@ -306,6 +313,7 @@ def encode(data, only):
             future.result()
 
     record_segments(data)
+    chunks(data, only)
 
 
 # ---------------------------------------------------------------- görseller
@@ -329,7 +337,7 @@ def frame(video, seconds, target):
     run([FFMPEG, "-hide_banner", "-loglevel", "error", "-y", *tls, "-ss", str(seconds), "-i", str(video), "-frames:v", "1", "-q:v", "2", str(target)])
 
 
-def render(html_text, width, height, target):
+def render(html_text, width, height, target, transparent=False):
     """HTML'i Chrome'un başsız moduyla görüntüye çeviriyor (fontlar `tools/fonts/`)."""
     target.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.NamedTemporaryFile("w", suffix=".html", dir=BUILD, delete=False, encoding="utf-8") as page:
@@ -337,7 +345,8 @@ def render(html_text, width, height, target):
 
     png = target.with_suffix(".png") if target.suffix != ".png" else target
     run([CHROME, "--headless=new", "--hide-scrollbars", "--force-device-scale-factor=1", f"--window-size={width},{height}",
-         "--allow-file-access-from-files", f"--screenshot={png}", f"file://{page.name}"], stderr=subprocess.DEVNULL)
+         "--allow-file-access-from-files", *(["--default-background-color=00000000"] if transparent else []), f"--screenshot={png}",
+         f"file://{page.name}"], stderr=subprocess.DEVNULL)
     os.unlink(page.name)
 
     if target.suffix == ".jpg":
@@ -363,6 +372,16 @@ html, body {{ margin: 0; width: 600px; height: 900px; overflow: hidden; backgrou
        font: 600 20px/1 DMSans; letter-spacing: .5px; text-transform: uppercase; }}
 </style></head><body><div class="art"></div><div class="shade"></div>
 <div class="text"><span class="tag">{html.escape(group)}</span></div></body></html>"""
+
+
+def logo_svg_html(svg, group):
+    """Kanalın özgün simgesi (`tools/logos/<kanal>.svg`, `currentColor`): grup renginde, şeffaf zeminde, tuvalin ortasında %75. Karo kendi
+    zeminini ve köşesini çiziyor (iOS ve Android'de logo karonun içine payla, sığdırılarak konuyor)."""
+    color = GROUP_COLORS.get(group, "#495057")
+    return f"""<!doctype html><html><head><meta charset="utf-8"><style>
+html, body {{ margin: 0; width: 256px; height: 256px; overflow: hidden; background: transparent; }}
+svg {{ position: absolute; left: 32px; top: 32px; width: 192px; height: 192px; color: {color}; }}
+</style></head><body>{svg}</body></html>"""
 
 
 def logo_html(name, group, initials=None):
@@ -409,7 +428,12 @@ def art(data, only):
 
     for channel in data["channels"]:
         if not only or channel["id"] in only:
-            render(logo_html(channel["name"], channel["group"], channel.get("logo")), 256, 256, ROOT / "logos" / f"{channel['id']}.png")
+            svg = LOGOS / f"{channel['id']}.svg"
+            target = ROOT / "logos" / f"{channel['id']}.png"
+            if svg.exists():
+                render(logo_svg_html(svg.read_text(encoding="utf-8"), channel["group"]), 256, 256, target, transparent=True)
+            else:
+                render(logo_html(channel["name"], channel["group"], channel.get("logo")), 256, 256, target)
 
 
 def sheets(data, only):
@@ -467,6 +491,29 @@ def record_segments(data):
     SEGMENTS.write_text("{\n" + ",\n".join(lines) + "\n}\n", encoding="utf-8")
 
 
+def chunks(data, only):
+    """Kanalın segmentleri 10'arlı gruplar halinde bayt bayt birleşiyor (`<kanal>-c000.ts` …; aynı kodlamanın ardışık TS parçaları, birleşince
+    kesintisiz TS). Worker `.ts` canlı isteğine bunları art arda akıtıyor. Segmentler yerelde yoksa `download` değil Releases'tan:
+    `gh release download live-<kanal> -p '*.ts'`."""
+    for channel in data["channels"]:
+        if only and channel["id"] not in only:
+            continue
+
+        folder = OUT / f"live-{channel['id']}"
+        count = len(segments(channel))
+        parts = [folder / f"{channel['id']}-{index:03d}.ts" for index in range(count)]
+        missing = [part.name for part in parts if not part.exists()]
+        if missing:
+            raise SystemExit(f"{channel['id']}: {len(missing)} segment yok (ilki {missing[0]})")
+
+        for chunk, start in enumerate(range(0, count, CHUNK_SEGMENTS)):
+            with open(folder / f"{channel['id']}-c{chunk:03d}.ts", "wb") as target:
+                for part in parts[start:start + CHUNK_SEGMENTS]:
+                    target.write(part.read_bytes())
+
+        print(f"parçalar {channel['id']}: {math.ceil(count / CHUNK_SEGMENTS)}", flush=True)
+
+
 def segments(channel):
     durations = json.loads(SEGMENTS.read_text(encoding="utf-8"))
     return durations[channel["id"]]
@@ -478,7 +525,7 @@ def site(data):
     lines = [f'#EXTM3U url-tvg="{WORKER}/xmltv.php?username=demo&password=demo"']
 
     for channel in data["channels"]:
-        logo = f"{SITE}/logos/{channel['id']}.png"
+        logo = f"{SITE}/logos/{channel['id']}.png?v={LOGO_VERSION}"
         lines += [f'#EXTINF:-1 tvg-id="{channel["id"]}" tvg-name="{channel["name"]}" tvg-logo="{logo}" group-title="{channel["group"]}",{channel["name"]}',
                   f"{WORKER}/hls/{channel['id']}.m3u8"]
 
@@ -529,7 +576,8 @@ h1, h2, b {{ color: #F2F2F4; }} a {{ color: #F2F2F4; }} li {{ margin: 6px 0; }}
 <h1>Dial demo playlist</h1>
 <p>A playlist for trying Dial, the media player for your own playlists. Dial doesn't provide any content; everything here is free to share:
 public domain works (including works of the U.S. government such as NASA, NOAA, NPS and USGS), CC0, CC BY and CC BY-SA. Videos are re-encoded
-(and channel clips joined into loops); titles shown in the app are ours, the original titles are on each source page.</p>
+(and channel clips joined into loops); titles shown in the app are ours, the original titles are on each source page. Channel logos are original drawings made for this demo
+(<code>tools/logos/</code>); they don't depict any real channel or brand.</p>
 <p>M3U: <a href="{SITE}/dial.m3u">{SITE}/dial.m3u</a></p>
 {"".join(sections)}
 </main></body></html>
@@ -567,7 +615,7 @@ def worker(data):
             programs = [{"title": title, "description": programs[0]["description"]} for title in channel["guide_titles"]]
 
         live.append({"num": number, "id": number, "key": channel["id"], "name": channel["name"], "category": category_id["live"][channel["group"]],
-                     "logo": f"{SITE}/logos/{channel['id']}.png", "segments": segments(channel),
+                     "logo": f"{SITE}/logos/{channel['id']}.png?v={LOGO_VERSION}", "segments": segments(channel),
                      "programs": programs})
 
     movie_items = [{"num": number, "id": 1000 + number, "key": movie["id"], "name": movie["title"], "category": category_id["movies"][movie["group"]],
@@ -588,15 +636,16 @@ def worker(data):
                          for episode_number, episode in enumerate(series["episodes"], start=1)],
         })
 
-    payload = {"site": SITE, "releases": RELEASES, "categories": categories, "live": live, "movies": movie_items,
+    payload = {"site": SITE, "releases": RELEASES, "chunk_segments": CHUNK_SEGMENTS, "categories": categories, "live": live, "movies": movie_items,
                "series": series_items}
     template = (ROOT / "worker" / "template.js").read_text(encoding="utf-8")
     (ROOT / "worker" / "worker.js").write_text(template.replace("__DATA__", json.dumps(payload, ensure_ascii=False, separators=(",", ":"))), encoding="utf-8")
     print(f"worker/worker.js: {len(live)} kanal, {len(movie_items)} film, {len(series_items)} dizi")
 
 
-def upload(data, only):
-    """Videolar GitHub Releases'a (`gh`): `media` (filmler, bölümler) ve kanal başına `live-<kanal>`; var olan dosya değiştiriliyor."""
+def upload(data, only, replace=False):
+    """Videolar GitHub Releases'a (`gh`): `media` (filmler, bölümler) ve kanal başına `live-<kanal>` (segmentler ve 1 dk'lık parçalar).
+    Sürümde zaten olan dosya atlanıyor; `--replace` ile yeniden yükleniyor (değişen kodlama)."""
     repository = "nejatboy/Dial-Demo"
     notes = f"Video files of the Dial demo playlist. Sources and licenses: {SITE}/"
     releases = {"media": sorted((OUT / "media").glob("*.mp4"))}
@@ -614,6 +663,11 @@ def upload(data, only):
         if tag not in existing:
             run(["gh", "release", "create", tag, "-R", repository, "--title", tag, "--notes", notes, "--latest=false"])
 
+        if not replace and tag in existing:
+            assets = subprocess.run(["gh", "release", "view", tag, "-R", repository, "--json", "assets", "-q", ".assets[].name"],
+                                    capture_output=True, text=True, check=True).stdout.split()
+            files = [path for path in files if path.name not in assets]
+
         print(f"yükle {tag}: {len(files)} dosya", flush=True)
 
         for start in range(0, len(files), 20):
@@ -624,6 +678,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("steps", nargs="*", default=["download", "encode", "art", "site", "worker"])
     parser.add_argument("--only", default="")
+    parser.add_argument("--replace", action="store_true")
     arguments = parser.parse_args()
     only = set(filter(None, arguments.only.split(",")))
     data = load_sources()
@@ -632,7 +687,7 @@ def main():
     for step in arguments.steps:
         {"download": lambda: download(data, only), "encode": lambda: encode(data, only), "art": lambda: art(data, only),
          "site": lambda: site(data), "sheets": lambda: sheets(data, only),
-         "upload": lambda: upload(data, only), "worker": lambda: worker(data)}[step]()
+         "upload": lambda: upload(data, only, arguments.replace), "chunks": lambda: chunks(data, only), "worker": lambda: worker(data)}[step]()
 
 
 if __name__ == "__main__":

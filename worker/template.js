@@ -18,7 +18,7 @@ const GUIDE_DAYS_AFTER = 3;
 const NEW_EVERY = 6;
 
 export default {
-  async fetch(request) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const origin = url.origin;
     const path = url.pathname;
@@ -39,7 +39,7 @@ export default {
       if (username !== USERNAME || password !== PASSWORD) {
         return new Response("Forbidden", { status: 403 });
       }
-      return streamRedirect(kind, Number(id), origin);
+      return streamRedirect(kind, Number(id), stream[5], origin, ctx);
     }
 
     const signedIn = query.get("username") === USERNAME && query.get("password") === PASSWORD;
@@ -183,10 +183,14 @@ function clock(seconds) {
 
 // ---------------------------------------------------------------- streams
 
-function streamRedirect(kind, id, origin) {
+function streamRedirect(kind, id, extension, origin, ctx) {
   if (kind === "live") {
     const channel = DATA.live.find((item) => item.id === id);
-    return channel ? Response.redirect(`${origin}/hls/${channel.key}.m3u8`, 302) : new Response("Not found", { status: 404 });
+    if (!channel) {
+      return new Response("Not found", { status: 404 });
+    }
+
+    return extension === "ts" ? liveTs(channel, ctx) : Response.redirect(`${origin}/hls/${channel.key}.m3u8`, 302);
   }
 
   if (kind === "movie") {
@@ -204,6 +208,53 @@ function streamRedirect(kind, id, origin) {
   return new Response("Not found", { status: 404 });
 }
 
+// The channel's position in its loop now: the loop's number since the Unix epoch and the segment playing.
+function loopPosition(durations) {
+  const loop = durations.reduce((sum, value) => sum + value, 0);
+  const now = Date.now() / 1000;
+  const cycle = Math.floor(now / loop);
+  let offset = now - cycle * loop;
+  let index = 0;
+
+  while (index < durations.length - 1 && offset >= durations[index]) {
+    offset -= durations[index];
+    index += 1;
+  }
+
+  return { cycle, index };
+}
+
+// Live as one MPEG-TS response (Xtream's ".ts" address, as real providers serve it; ExoPlayer picks the format from the extension
+// and doesn't follow a redirect to HLS). Starts at the 1-minute chunk playing now and streams the following chunks back to back.
+// Chunks are consecutive pieces of one encode, so timestamps run on; the response ends at the end of the loop (timestamps would jump
+// back to the start there) or after MAX_CHUNKS (the free plan allows 50 subrequests, each GitHub download is 2 with its redirect).
+// The app then opens the channel again, as it does when a provider closes the connection.
+const MAX_CHUNKS = 24;
+
+function liveTs(channel, ctx) {
+  const size = DATA.chunk_segments;
+  const count = Math.ceil(channel.segments.length / size);
+  const first = Math.floor(loopPosition(channel.segments).index / size);
+  const last = Math.min(count, first + MAX_CHUNKS);
+  const { readable, writable } = new TransformStream();
+
+  const pump = (async () => {
+    for (let chunk = first; chunk < last; chunk += 1) {
+      const response = await fetch(`${DATA.releases}/live-${channel.key}/${channel.key}-c${String(chunk).padStart(3, "0")}.ts`);
+      if (!response.ok || !response.body) {
+        break;
+      }
+
+      await response.body.pipeTo(writable, { preventClose: true });
+    }
+
+    await writable.close();
+  })().catch(() => writable.abort().catch(() => {}));
+
+  ctx.waitUntil(pump);
+  return new Response(readable, { headers: { "content-type": "video/mp2t", "cache-control": "no-store" } });
+}
+
 // Live: the channel's loop (segments with their durations) runs continuously since the Unix epoch; the playlist
 // lists the last SEGMENT_WINDOW segments up to now, with a discontinuity where the loop starts again.
 function livePlaylist(key) {
@@ -214,17 +265,7 @@ function livePlaylist(key) {
 
   const durations = channel.segments;
   const count = durations.length;
-  const loop = durations.reduce((sum, value) => sum + value, 0);
-  const now = Date.now() / 1000;
-  const cycle = Math.floor(now / loop);
-  let offset = now - cycle * loop;
-  let index = 0;
-
-  while (index < count - 1 && offset >= durations[index]) {
-    offset -= durations[index];
-    index += 1;
-  }
-
+  const { cycle, index } = loopPosition(durations);
   const current = cycle * count + index;
   const first = Math.max(0, current - SEGMENT_WINDOW + 1);
   const lines = ["#EXTM3U", "#EXT-X-VERSION:3", `#EXT-X-TARGETDURATION:${Math.ceil(Math.max(...durations))}`,

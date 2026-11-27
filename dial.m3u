@@ -1,39 +1,39 @@
 #EXTM3U url-tvg="https://dial-demo.njsoft.workers.dev/xmltv.php?username=demo&password=demo"
-#EXTINF:-1 tvg-id="earth-from-orbit" tvg-name="Earth from Orbit" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/earth-from-orbit.png" group-title="Space",Earth from Orbit
+#EXTINF:-1 tvg-id="earth-from-orbit" tvg-name="Earth from Orbit" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/earth-from-orbit.png?v=2" group-title="Space",Earth from Orbit
 https://dial-demo.njsoft.workers.dev/hls/earth-from-orbit.m3u8
-#EXTINF:-1 tvg-id="launch-pad" tvg-name="Launch Pad" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/launch-pad.png" group-title="Space",Launch Pad
+#EXTINF:-1 tvg-id="launch-pad" tvg-name="Launch Pad" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/launch-pad.png?v=2" group-title="Space",Launch Pad
 https://dial-demo.njsoft.workers.dev/hls/launch-pad.m3u8
-#EXTINF:-1 tvg-id="red-planet" tvg-name="Red Planet" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/red-planet.png" group-title="Space",Red Planet
+#EXTINF:-1 tvg-id="red-planet" tvg-name="Red Planet" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/red-planet.png?v=2" group-title="Space",Red Planet
 https://dial-demo.njsoft.workers.dev/hls/red-planet.m3u8
-#EXTINF:-1 tvg-id="sun-tv" tvg-name="Sun TV" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/sun-tv.png" group-title="Space",Sun TV
+#EXTINF:-1 tvg-id="sun-tv" tvg-name="Sun TV" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/sun-tv.png?v=2" group-title="Space",Sun TV
 https://dial-demo.njsoft.workers.dev/hls/sun-tv.m3u8
-#EXTINF:-1 tvg-id="moonlight" tvg-name="Moonlight" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/moonlight.png" group-title="Space",Moonlight
+#EXTINF:-1 tvg-id="moonlight" tvg-name="Moonlight" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/moonlight.png?v=2" group-title="Space",Moonlight
 https://dial-demo.njsoft.workers.dev/hls/moonlight.m3u8
-#EXTINF:-1 tvg-id="wild-planet" tvg-name="Wild Planet" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/wild-planet.png" group-title="Nature",Wild Planet
+#EXTINF:-1 tvg-id="wild-planet" tvg-name="Wild Planet" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/wild-planet.png?v=2" group-title="Nature",Wild Planet
 https://dial-demo.njsoft.workers.dev/hls/wild-planet.m3u8
-#EXTINF:-1 tvg-id="waterfalls" tvg-name="Waterfalls" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/waterfalls.png" group-title="Nature",Waterfalls
+#EXTINF:-1 tvg-id="waterfalls" tvg-name="Waterfalls" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/waterfalls.png?v=2" group-title="Nature",Waterfalls
 https://dial-demo.njsoft.workers.dev/hls/waterfalls.m3u8
-#EXTINF:-1 tvg-id="time-lapse" tvg-name="Time-lapse" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/time-lapse.png" group-title="Nature",Time-lapse
+#EXTINF:-1 tvg-id="time-lapse" tvg-name="Time-lapse" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/time-lapse.png?v=2" group-title="Nature",Time-lapse
 https://dial-demo.njsoft.workers.dev/hls/time-lapse.m3u8
-#EXTINF:-1 tvg-id="macro" tvg-name="Macro" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/macro.png" group-title="Nature",Macro
+#EXTINF:-1 tvg-id="macro" tvg-name="Macro" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/macro.png?v=2" group-title="Nature",Macro
 https://dial-demo.njsoft.workers.dev/hls/macro.m3u8
-#EXTINF:-1 tvg-id="deep-blue" tvg-name="Deep Blue" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/deep-blue.png" group-title="Ocean",Deep Blue
+#EXTINF:-1 tvg-id="deep-blue" tvg-name="Deep Blue" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/deep-blue.png?v=2" group-title="Ocean",Deep Blue
 https://dial-demo.njsoft.workers.dev/hls/deep-blue.m3u8
-#EXTINF:-1 tvg-id="reef" tvg-name="Reef" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/reef.png" group-title="Ocean",Reef
+#EXTINF:-1 tvg-id="reef" tvg-name="Reef" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/reef.png?v=2" group-title="Ocean",Reef
 https://dial-demo.njsoft.workers.dev/hls/reef.m3u8
-#EXTINF:-1 tvg-id="whale-watch" tvg-name="Whale Watch" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/whale-watch.png" group-title="Ocean",Whale Watch
+#EXTINF:-1 tvg-id="whale-watch" tvg-name="Whale Watch" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/whale-watch.png?v=2" group-title="Ocean",Whale Watch
 https://dial-demo.njsoft.workers.dev/hls/whale-watch.m3u8
-#EXTINF:-1 tvg-id="open-movies" tvg-name="Open Movies" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/open-movies.png" group-title="Animation",Open Movies
+#EXTINF:-1 tvg-id="open-movies" tvg-name="Open Movies" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/open-movies.png?v=2" group-title="Animation",Open Movies
 https://dial-demo.njsoft.workers.dev/hls/open-movies.m3u8
-#EXTINF:-1 tvg-id="shorts" tvg-name="Shorts" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/shorts.png" group-title="Animation",Shorts
+#EXTINF:-1 tvg-id="shorts" tvg-name="Shorts" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/shorts.png?v=2" group-title="Animation",Shorts
 https://dial-demo.njsoft.workers.dev/hls/shorts.m3u8
-#EXTINF:-1 tvg-id="sky-view" tvg-name="Sky View" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/sky-view.png" group-title="Travel",Sky View
+#EXTINF:-1 tvg-id="sky-view" tvg-name="Sky View" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/sky-view.png?v=2" group-title="Travel",Sky View
 https://dial-demo.njsoft.workers.dev/hls/sky-view.m3u8
-#EXTINF:-1 tvg-id="mountains" tvg-name="Mountains" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/mountains.png" group-title="Travel",Mountains
+#EXTINF:-1 tvg-id="mountains" tvg-name="Mountains" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/mountains.png?v=2" group-title="Travel",Mountains
 https://dial-demo.njsoft.workers.dev/hls/mountains.m3u8
-#EXTINF:-1 tvg-id="storm-watch" tvg-name="Storm Watch" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/storm-watch.png" group-title="Weather",Storm Watch
+#EXTINF:-1 tvg-id="storm-watch" tvg-name="Storm Watch" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/storm-watch.png?v=2" group-title="Weather",Storm Watch
 https://dial-demo.njsoft.workers.dev/hls/storm-watch.m3u8
-#EXTINF:-1 tvg-id="blue-marble" tvg-name="Blue Marble" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/blue-marble.png" group-title="Weather",Blue Marble
+#EXTINF:-1 tvg-id="blue-marble" tvg-name="Blue Marble" tvg-logo="https://nejatboy.github.io/Dial-Demo/logos/blue-marble.png?v=2" group-title="Weather",Blue Marble
 https://dial-demo.njsoft.workers.dev/hls/blue-marble.m3u8
 #EXTINF:-1 tvg-name="Big Buck Bunny" tvg-logo="https://nejatboy.github.io/Dial-Demo/posters/big-buck-bunny.jpg" group-title="Animation",Big Buck Bunny
 https://github.com/nejatboy/Dial-Demo/releases/download/media/big-buck-bunny.mp4
