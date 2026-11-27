@@ -543,7 +543,7 @@ def short_credit(source):
 
 def origin_line(source):
     """Kaynağın kısa atfı (programın açıklaması, filmin özeti): yazar ve lisans; ayrıntı lisans sayfasında."""
-    where = "NASA" if "nasa" in source else "Wikimedia Commons"
+    where = "NASA Image Library" if "nasa" in source else "Wikimedia Commons"
     return f"{short_credit(source)} · {source['license']} · {where}"
 
 
