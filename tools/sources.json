@@ -36,6 +36,7 @@
     "commons": "Sintel movie 4K.webm",
     "license": "CC BY 3.0",
     "author": "Durian Open Movie project; about page (archived link 31 March 2014); see also the credits roll.",
+    "credit": "Blender Foundation",
     "duration": 888,
     "width": 4096,
     "height": 1744
@@ -148,6 +149,7 @@
     "commons": "Tears of Steel 1080p.webm",
     "license": "CC BY 3.0",
     "author": "(CC) Blender Foundation | mango.blender.org [1]",
+    "credit": "Blender Foundation",
     "duration": 734,
     "width": 1920,
     "height": 800
@@ -204,6 +206,7 @@
     "commons": "Moon Phase and Libration, 2020 South Up 4K UHD.webm",
     "license": "Public domain",
     "author": "Ernie Wright (USRA): Lead Visualizer",
+    "credit": "NASA Goddard / Ernie Wright",
     "duration": 294,
     "width": 3840,
     "height": 2160
@@ -336,6 +339,7 @@
       "commons": "Caminandes- Llama Drama - Short Movie.ogv",
       "license": "CC BY 3.0",
       "author": "Pablo Vazquez, Beorn Leonard, and Francesco Siddi. Music and Sound by Jan Morgenstern",
+      "credit": "Pablo Vazquez, Beorn Leonard, Francesco Siddi",
       "duration": 90,
       "width": 1920,
       "height": 1080
@@ -347,6 +351,7 @@
       "commons": "Caminandes - Gran Dillama - Blender Foundation's new Open Movie.webm",
       "license": "CC BY-SA 3.0",
       "author": "Produced by Pablo Vazquez, Beorn Leonard and Francesco Siddi. Soundtrack by Jan Morgenstern.",
+      "credit": "Pablo Vazquez, Beorn Leonard, Francesco Siddi",
       "duration": 146,
       "width": 1920,
       "height": 1080
@@ -358,6 +363,7 @@
       "commons": "Caminandes 3 - Llamigos - Blender Animated Short.webm",
       "license": "CC BY 3.0",
       "author": "Blender",
+      "credit": "Blender Foundation",
       "duration": 150,
       "width": 1920,
       "height": 1080
@@ -494,6 +500,7 @@
       "commons": "Impressive solar filament eruption - January 20, 2023 (SVS5068 - 20230120 FilamentErupt AIA304 PSF 2048p30).webm",
       "license": "Public domain",
       "author": "NASA's Scientific Visualization Studio - Global Science and Technology, Inc./Tom Bridgman, KBR Wyle Services, LLC/Scott",
+      "credit": "NASA Scientific Visualization Studio",
       "duration": 60,
       "width": 2048,
       "height": 2048
@@ -505,6 +512,7 @@
       "commons": "Dancing on the Limb - May 1, 2023 (SVS5103 - 20230501 LimbEvent AIA171 PSF stamped 1024p30).webm",
       "license": "Public domain",
       "author": "NASA's Scientific Visualization Studio - Global Science and Technology, Inc./Tom Bridgman, KBR Wyle Services, LLC/Scott",
+      "credit": "NASA Scientific Visualization Studio",
       "duration": 150,
       "width": 1024,
       "height": 1024
@@ -516,6 +524,7 @@
       "commons": "An X1 9 Class Solar Flare and its Aftermath - January 9, 2023 (SVS5063 - 20230109 AR13184X19 AIA131 PSF stamped 1024p30).webm",
       "license": "Public domain",
       "author": "NASA's Scientific Visualization Studio - Global Science and Technology, Inc./Tom Bridgman, KBR Wyle Services, LLC/Scott",
+      "credit": "NASA Scientific Visualization Studio",
       "duration": 159,
       "width": 1024,
       "height": 1024
@@ -604,6 +613,7 @@
       "commons": "Kīlauea Volcano Summit 2018 August 26 by USGS.webm",
       "license": "Public domain",
       "author": "U.S. Geological Survey - Hawaiian Volcano Observatory",
+      "credit": "USGS Hawaiian Volcano Observatory",
       "duration": 137,
       "width": 1920,
       "height": 1080
@@ -742,6 +752,14 @@
    "id": "earth-from-orbit",
    "name": "Earth from Orbit",
    "group": "Space",
+   "guide_titles": [
+    "Earth Views from the ISS",
+    "Above the Clouds",
+    "Daylight Orbit",
+    "Over the Oceans",
+    "The Blue Planet",
+    "Space Station Window"
+   ],
    "clips": [
     {
      "nasa": "NHQ_2020_1221_Earth Views",
@@ -762,6 +780,7 @@
      "commons": "Starlink 12-24 Launches from Cape Canaveral Space Force Station (966204).webm",
      "license": "Public domain",
      "author": "U.S. Space Force photo by Robert Mason",
+     "credit": "U.S. Space Force / Robert Mason",
      "duration": 30,
      "width": 1920,
      "height": 1080
@@ -770,6 +789,7 @@
      "commons": "CRS-35 Launches from Cape Canaveral Space Force Station (1027552).webm",
      "license": "Public domain",
      "author": "U.S. Space Force video by Senior Airman Tyler Moody",
+     "credit": "U.S. Space Force / Tyler Moody",
      "duration": 48,
      "width": 3840,
      "height": 2160
@@ -856,6 +876,7 @@
      "commons": "M-flare Saturday - a group of M-flares for the Weekend - May 20, 2023 (SVS5109 - 20230520 MFlareSaturday AIA171 PSF stamped 2048p30).webm",
      "license": "Public domain",
      "author": "NASA's Scientific Visualization Studio - Global Science and Technology, Inc./Tom Bridgman, KBR Wyle Services, LLC/Scott",
+     "credit": "NASA Scientific Visualization Studio",
      "duration": 200,
      "width": 2048,
      "height": 2048
@@ -864,6 +885,7 @@
      "commons": "An 9 6 M-class flare and Filament - May 16, 2023 (SVS5108 - 20230516 Filament M96 AIA171 PSF stamped 2048p30).webm",
      "license": "Public domain",
      "author": "NASA's Scientific Visualization Studio - Global Science and Technology, Inc./Tom Bridgman, KBR Wyle Services, LLC/Scott",
+     "credit": "NASA Scientific Visualization Studio",
      "duration": 50,
      "width": 2048,
      "height": 2048
@@ -872,6 +894,7 @@
      "commons": "M1 Flare and Eruption on Solar Limb - February 7, 2023 (SVS5077 - 20230207 EruptM10 AIA304 PSF stamped 1024p30).webm",
      "license": "Public domain",
      "author": "NASA's Scientific Visualization Studio - Global Science and Technology, Inc./Tom Bridgman, KBR Wyle Services, LLC/Scott",
+     "credit": "NASA Scientific Visualization Studio",
      "duration": 40,
      "width": 1024,
      "height": 1024
@@ -887,6 +910,7 @@
      "commons": "Moon distance 2020 4K.webm",
      "license": "Public domain",
      "author": "NASA Goddard/ Ernie Wright",
+     "credit": "NASA Goddard / Ernie Wright",
      "duration": 294,
      "width": 3840,
      "height": 2160
@@ -911,6 +935,7 @@
      "commons": "Moon.webm",
      "license": "CC BY 3.0",
      "author": "Video and edition: Jynus / Music: Kevin MacLeod (incompetech.com)",
+     "credit": "Jynus, music by Kevin MacLeod",
      "duration": 166,
      "width": 1920,
      "height": 1080
@@ -943,6 +968,7 @@
      "commons": "Rangifer tarandus - Inari 2013.ogv",
      "license": "CC BY-SA 3.0",
      "author": "Manfred Werner - Tsui",
+     "credit": "Manfred Werner (Tsui)",
      "duration": 123,
      "width": 1920,
      "height": 1080
@@ -951,6 +977,7 @@
      "commons": "Alaskan Huskies - Sled Dogs - Ivalo 2013.ogv",
      "license": "CC BY-SA 3.0",
      "author": "Manfred Werner — Tsui",
+     "credit": "Manfred Werner (Tsui)",
      "duration": 383,
      "width": 1920,
      "height": 1080
@@ -990,6 +1017,7 @@
      "commons": "High Falls in Minnesota.webm",
      "license": "CC BY 3.0",
      "author": "Liftoff Aerials - Cory Fechner",
+     "credit": "Liftoff Aerials / Cory Fechner",
      "duration": 146,
      "width": 1280,
      "height": 720
@@ -1100,6 +1128,7 @@
      "commons": "Blue Holes auf den Bahamas (CC BY 4.0).webm",
      "license": "CC BY 4.0",
      "author": "ZDF/Terra X/SPIEGEL TV/Christopher Gerisch/Tilman Remme/Reiner Bauer, Oliver Gurr/Oliver Roetz, Philipp Klein/Hauke Kete",
+     "credit": "ZDF / Terra X",
      "duration": 92,
      "width": 1920,
      "height": 1080
@@ -1108,6 +1137,7 @@
      "commons": "Jellyfish- 2016 Deepwater Exploration of the Marianas.webm",
      "license": "Public domain",
      "author": "oceanexplorergov",
+     "credit": "NOAA Ocean Exploration",
      "duration": 43,
      "width": 1920,
      "height": 1080
@@ -1366,6 +1396,7 @@
      "commons": "Tongan Eruption Ripples Around the Globe.webm",
      "license": "Public domain",
      "author": "NOAASatellites",
+     "credit": "NOAA Satellites",
      "duration": 118,
      "width": 3840,
      "height": 2160
@@ -1381,6 +1412,7 @@
      "commons": "A Daily View of Earth (SVS31223).webm",
      "license": "Public domain",
      "author": "NASA's Scientific Visualization Studio - Marit Jentoft-Nilsen",
+     "credit": "NASA SVS / Marit Jentoft-Nilsen",
      "duration": 40,
      "width": 3840,
      "height": 2160

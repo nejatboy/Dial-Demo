@@ -21,7 +21,8 @@ Adımlar:  python3 tools/generate.py [adım …] [--only id,id]
   art       afişler, sahne görselleri, logolar (Chrome'un başsız moduyla)
   site      dial.m3u ve lisans sayfası (index.html)
   upload    videoları GitHub Releases'a yükle (`gh`; adımlara dahil değil)
-  worker    Cloudflare Worker'ın kodu `worker/worker.js` (Xtream ucu, canlı HLS, yayın akışı; adresi DIAL_WORKER)
+  worker    Cloudflare Worker'ın kodu `worker/worker.js` (Xtream ucu, canlı HLS, yayın akışı; adresi DIAL_WORKER); kanalların parça
+            süreleri `tools/segments.json`'dan (encode yazıyor), `build/` gerekmiyor
   sheets    afişin karesini seçmek için aday kareler (`build/sheets/`; adımlara dahil değil)
   (adım verilmezse hepsi)
 ffmpeg: ~/.local/bin/ffmpeg (FFMPEG ortam değişkeniyle değişir)
@@ -48,6 +49,7 @@ TOOLS = ROOT / "tools"
 BUILD = ROOT / "build"
 SOURCE = BUILD / "source"
 OUT = BUILD / "out"
+SEGMENTS = TOOLS / "segments.json"
 FONTS = TOOLS / "fonts"
 FFMPEG = os.environ.get("FFMPEG", str(pathlib.Path.home() / ".local/bin/ffmpeg"))
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
@@ -303,17 +305,28 @@ def encode(data, only):
         for future in [pool.submit(job[0], *job[1:]) for job in jobs]:
             future.result()
 
+    record_segments(data)
+
 
 # ---------------------------------------------------------------- görseller
 
 
+def media(name):
+    """Kodlanmış video: `build/out/media/` varsa oradan, yoksa Releases'tan (ffmpeg yalnız gereken baytları istiyor; afişler videoları
+    yeniden indirip kodlamadan üretilebilsin)."""
+    local = OUT / "media" / name
+    return str(local) if local.exists() else f"{RELEASES}/media/{name}"
+
+
 def frame(video, seconds, target):
-    """Videonun bir karesi (afiş ve sahne görselinin zemini)."""
+    """Videonun bir karesi (afiş ve sahne görselinin zemini); `video` yol ya da adres."""
     if target.exists():
         return
 
     target.parent.mkdir(parents=True, exist_ok=True)
-    run([FFMPEG, "-hide_banner", "-loglevel", "error", "-y", "-ss", str(seconds), "-i", str(video), "-frames:v", "1", "-q:v", "2", str(target)])
+    # Durağan ffmpeg'in OpenSSL'i sistemin sertifikalarını bilmiyor: adreste macOS'un listesi veriliyor.
+    tls = ["-ca_file", "/etc/ssl/cert.pem"] if str(video).startswith("https://") else []
+    run([FFMPEG, "-hide_banner", "-loglevel", "error", "-y", *tls, "-ss", str(seconds), "-i", str(video), "-frames:v", "1", "-q:v", "2", str(target)])
 
 
 def render(html_text, width, height, target):
@@ -338,18 +351,18 @@ FONT_FACE = f"""
 """
 
 
-def poster_html(image, title, group):
+def poster_html(image, group):
+    """Afiş: kare ve grup etiketi; başlığı uygulama afişin altına kendisi yazıyor (afişte de olunca iki kez görünüyordu)."""
     color = GROUP_COLORS.get(group, "#495057")
     return f"""<!doctype html><html><head><meta charset="utf-8"><style>{FONT_FACE}
 html, body {{ margin: 0; width: 600px; height: 900px; overflow: hidden; background: #0B0B0D; }}
 .art {{ position: absolute; inset: 0; background: url('file://{image}') center / cover no-repeat; }}
-.shade {{ position: absolute; inset: 0; background: linear-gradient(180deg, rgba(11,11,13,0) 45%, rgba(11,11,13,.92) 82%, #0B0B0D 100%); }}
+.shade {{ position: absolute; inset: 0; background: linear-gradient(180deg, rgba(11,11,13,0) 70%, rgba(11,11,13,.75) 100%); }}
 .text {{ position: absolute; left: 40px; right: 40px; bottom: 48px; }}
 .tag {{ display: inline-block; padding: 6px 14px; border-radius: 999px; background: {color}; color: #fff;
        font: 600 20px/1 DMSans; letter-spacing: .5px; text-transform: uppercase; }}
-h1 {{ margin: 18px 0 0; color: #F2F2F4; font: 700 64px/1.02 Outfit; letter-spacing: -1px; }}
 </style></head><body><div class="art"></div><div class="shade"></div>
-<div class="text"><span class="tag">{html.escape(group)}</span><h1>{html.escape(title)}</h1></div></body></html>"""
+<div class="text"><span class="tag">{html.escape(group)}</span></div></body></html>"""
 
 
 def logo_html(name, group, initials=None):
@@ -366,11 +379,11 @@ div {{ display: flex; align-items: center; justify-content: center; width: 256px
 def art(data, only):
     frames = BUILD / "frames"
 
-    def artwork(item_id, title, group, video, seconds, duration):
+    def artwork(item_id, group, video, seconds, duration):
         """Afiş ve sahne görseli aynı kareden: `poster_at` (sn; dizide [bölüm, sn]) seçilmişse o, yoksa videonun %30'u."""
         still = frames / f"{item_id}.jpg"
         frame(video, seconds if seconds is not None else round(duration * 0.3, 1), still)
-        render(poster_html(still, title, group), 600, 900, ROOT / "posters" / f"{item_id}.jpg")
+        render(poster_html(still, group), 600, 900, ROOT / "posters" / f"{item_id}.jpg")
         backdrop = ROOT / "backdrops" / f"{item_id}.jpg"
         if not backdrop.exists():
             backdrop.parent.mkdir(parents=True, exist_ok=True)
@@ -381,18 +394,18 @@ def art(data, only):
         if not only or movie["id"] in only:
             seconds = movie.get("poster_at")
             seconds = None if seconds is None else seconds - movie["source"].get("start", 0)
-            artwork(movie["id"], movie["title"], movie["group"], OUT / "media" / f"{movie['id']}.mp4", seconds, length(movie["source"]))
+            artwork(movie["id"], movie["group"], media(f"{movie['id']}.mp4"), seconds, length(movie["source"]))
 
     for series in data["series"]:
         if not only or series["id"] in only:
             number, seconds = series.get("poster_at", [1, None])
             episode = series["episodes"][number - 1]
             seconds = None if seconds is None else seconds - episode["source"].get("start", 0)
-            artwork(series["id"], series["title"], series["group"], OUT / "media" / f"{series['id']}-e{number}.mp4", seconds, length(episode["source"]))
+            artwork(series["id"], series["group"], media(f"{series['id']}-e{number}.mp4"), seconds, length(episode["source"]))
 
             for number, episode in enumerate(series["episodes"], start=1):
                 still = ROOT / "backdrops" / f"{series['id']}-e{number}.jpg"
-                frame(OUT / "media" / f"{series['id']}-e{number}.mp4", round(length(episode["source"]) * 0.4, 1), still)
+                frame(media(f"{series['id']}-e{number}.mp4"), round(length(episode["source"]) * 0.4, 1), still)
 
     for channel in data["channels"]:
         if not only or channel["id"] in only:
@@ -440,15 +453,23 @@ def clip_title(clip, movies):
     return re.sub(r"\s+", " ", name).strip()
 
 
+def record_segments(data):
+    """Kanalların HLS parçalarının süreleri `tools/segments.json`'a (git'te): Worker'ın kayan listesi bunlardan kuruluyor. Kodlanan kanalın
+    süreleri yerel `loop.m3u8`'den yenileniyor, ötekiler kalıyor; böylece `worker` adımı `build/` olmadan da çalışıyor."""
+    durations = json.loads(SEGMENTS.read_text(encoding="utf-8")) if SEGMENTS.exists() else {}
+
+    for channel in data["channels"]:
+        playlist = OUT / f"live-{channel['id']}" / "loop.m3u8"
+        if playlist.exists():
+            durations[channel["id"]] = [round(float(line[8:].rstrip(",")), 3) for line in playlist.read_text().splitlines() if line.startswith("#EXTINF:")]
+
+    lines = [f" {json.dumps(key)}: {json.dumps(value, separators=(',', ':'))}" for key, value in durations.items()]
+    SEGMENTS.write_text("{\n" + ",\n".join(lines) + "\n}\n", encoding="utf-8")
+
+
 def segments(channel):
-    playlist = (OUT / f"live-{channel['id']}" / "loop.m3u8").read_text().splitlines()
-    pairs = []
-
-    for index, line in enumerate(playlist):
-        if line.startswith("#EXTINF:"):
-            pairs.append((float(line[8:].rstrip(",")), playlist[index + 1].strip()))
-
-    return pairs
+    durations = json.loads(SEGMENTS.read_text(encoding="utf-8"))
+    return durations[channel["id"]]
 
 
 def site(data):
@@ -515,10 +536,15 @@ public domain works (including works of the U.S. government such as NASA, NOAA, 
 """
 
 
+def short_credit(source):
+    """Uygulamada görünen yazar: `credit` (Commons'un dağınık ham metni elle kısaltılmış) yoksa `author`. Lisans sayfası tam `author`'u veriyor."""
+    return source.get("credit", source["author"])
+
+
 def origin_line(source):
     """Kaynağın kısa atfı (programın açıklaması, filmin özeti): yazar ve lisans; ayrıntı lisans sayfasında."""
     where = "NASA" if "nasa" in source else "Wikimedia Commons"
-    return f"{source['author']} · {source['license']} · {where}"
+    return f"{short_credit(source)} · {source['license']} · {where}"
 
 
 def worker(data):
@@ -536,8 +562,12 @@ def worker(data):
             source = movies[clip["movie"]]["source"] if "movie" in clip else clip
             programs.append({"title": clip_title(clip, movies), "description": origin_line(source)})
 
+        # Tek kliplik kanal (Earth from Orbit) yayın akışında hep aynı başlıkla görünmesin: `guide_titles` bloklara sırayla dağılıyor.
+        if channel.get("guide_titles"):
+            programs = [{"title": title, "description": programs[0]["description"]} for title in channel["guide_titles"]]
+
         live.append({"num": number, "id": number, "key": channel["id"], "name": channel["name"], "category": category_id["live"][channel["group"]],
-                     "logo": f"{SITE}/logos/{channel['id']}.png", "segments": [round(duration, 3) for duration, _ in segments(channel)],
+                     "logo": f"{SITE}/logos/{channel['id']}.png", "segments": segments(channel),
                      "programs": programs})
 
     movie_items = [{"num": number, "id": 1000 + number, "key": movie["id"], "name": movie["title"], "category": category_id["movies"][movie["group"]],
@@ -547,7 +577,7 @@ def worker(data):
     series_items = []
 
     for number, series in enumerate(data["series"], start=1):
-        authors = list(dict.fromkeys(episode["source"]["author"] for episode in series["episodes"]))
+        authors = list(dict.fromkeys(short_credit(episode["source"]) for episode in series["episodes"]))
         series_items.append({
             "num": number, "id": 2000 + number, "key": series["id"], "name": series["title"], "category": category_id["series"][series["group"]],
             "genre": series["group"], "cover": f"{SITE}/posters/{series['id']}.jpg", "backdrop": f"{SITE}/backdrops/{series['id']}.jpg",
@@ -558,7 +588,7 @@ def worker(data):
                          for episode_number, episode in enumerate(series["episodes"], start=1)],
         })
 
-    payload = {"site": SITE, "releases": RELEASES, "added": "1798761600", "categories": categories, "live": live, "movies": movie_items,
+    payload = {"site": SITE, "releases": RELEASES, "categories": categories, "live": live, "movies": movie_items,
                "series": series_items}
     template = (ROOT / "worker" / "template.js").read_text(encoding="utf-8")
     (ROOT / "worker" / "worker.js").write_text(template.replace("__DATA__", json.dumps(payload, ensure_ascii=False, separators=(",", ":"))), encoding="utf-8")

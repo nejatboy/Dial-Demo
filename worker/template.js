@@ -13,6 +13,9 @@ const SEGMENT_WINDOW = 6;
 const BLOCK_SECONDS = 1800;
 const GUIDE_DAYS_BEFORE = 1;
 const GUIDE_DAYS_AFTER = 3;
+// Every NEW_EVERY-th channel, movie and series was "added" in the last week (the apps' NEW badge covers 7 days), the rest
+// weeks ago; dates count back from today, so "Recently added" never goes stale.
+const NEW_EVERY = 6;
 
 export default {
   async fetch(request) {
@@ -90,13 +93,13 @@ function playerApi(action, query, origin) {
     case "get_live_streams":
       return DATA.live.filter(inCategory(query)).map((channel) => ({
         num: channel.num, name: channel.name, stream_type: "live", stream_id: channel.id, stream_icon: channel.logo,
-        epg_channel_id: channel.key, added: DATA.added, category_id: String(channel.category), custom_sid: "",
+        epg_channel_id: channel.key, added: addedAt(channel.num), category_id: String(channel.category), custom_sid: "",
         tv_archive: 0, direct_source: "", tv_archive_duration: 0,
       }));
     case "get_vod_streams":
       return DATA.movies.filter(inCategory(query)).map((movie) => ({
         num: movie.num, name: movie.name, stream_type: "movie", stream_id: movie.id, stream_icon: movie.poster,
-        rating: "", rating_5based: 0, added: DATA.added, category_id: String(movie.category),
+        rating: "", rating_5based: 0, added: addedAt(movie.num), category_id: String(movie.category),
         container_extension: "mp4", custom_sid: "", direct_source: "",
       }));
     case "get_vod_info":
@@ -104,7 +107,7 @@ function playerApi(action, query, origin) {
     case "get_series":
       return DATA.series.filter(inCategory(query)).map((series) => ({
         num: series.num, name: series.name, series_id: series.id, cover: series.cover, plot: series.plot, cast: "",
-        director: "", genre: series.genre, releaseDate: "", last_modified: DATA.added, rating: "", rating_5based: 0,
+        director: "", genre: series.genre, releaseDate: "", last_modified: addedAt(series.num), rating: "", rating_5based: 0,
         backdrop_path: [series.backdrop], youtube_trailer: "", episode_run_time: "", category_id: String(series.category),
       }));
     case "get_series_info":
@@ -137,7 +140,7 @@ function vodInfo(id) {
       name: movie.name, movie_image: movie.poster, backdrop_path: [movie.backdrop], plot: movie.plot, description: movie.plot,
       genre: movie.genre, releasedate: "", duration_secs: movie.seconds, duration: clock(movie.seconds), rating: "",
     },
-    movie_data: { stream_id: movie.id, name: movie.name, added: DATA.added, category_id: String(movie.category), container_extension: "mp4" },
+    movie_data: { stream_id: movie.id, name: movie.name, added: addedAt(movie.num), category_id: String(movie.category), container_extension: "mp4" },
   };
 }
 
@@ -156,10 +159,19 @@ function seriesInfo(id) {
     episodes: {
       1: series.episodes.map((episode) => ({
         id: String(episode.id), episode_num: episode.number, title: episode.title, container_extension: "mp4", season: 1,
-        added: DATA.added, info: { duration_secs: episode.seconds, duration: clock(episode.seconds), movie_image: episode.still, plot: "" },
+        added: addedAt(series.num), info: { duration_secs: episode.seconds, duration: clock(episode.seconds), movie_image: episode.still, plot: "" },
       })),
     },
   };
+}
+
+// Unix seconds as a string, at midnight UTC: num 1, 7, 13 … 1–4 days ago, the others 12 days ago and older.
+function addedAt(num) {
+  const index = num - 1;
+  const now = Math.floor(Date.now() / 1000);
+  const today = now - (now % 86400);
+  const days = index % NEW_EVERY === 0 ? 1 + index / NEW_EVERY : 10 + index * 2;
+  return String(today - days * 86400);
 }
 
 function clock(seconds) {
