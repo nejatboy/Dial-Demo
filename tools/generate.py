@@ -61,8 +61,8 @@ RELEASES = "https://github.com/nejatboy/Dial-Demo/releases/download"
 WORKER = os.environ.get("DIAL_WORKER", "https://dial-demo.njsoft.workers.dev")
 
 SEGMENT_SECONDS = 6
-# Logoların sürümü adreste (`logos/<kanal>.png?v=2`): uygulamalar logoları disk önbelleğinde tutuyor, yeni çizim playlist yenilenince gelsin.
-LOGO_VERSION = 2
+# Logoların sürümü adreste (`logos/<kanal>.png?v=3`): uygulamalar logoları disk önbelleğinde tutuyor, yeni çizim playlist yenilenince gelsin.
+LOGO_VERSION = 3
 LOGOS = TOOLS / "logos"
 # Xtream'in `.ts` canlısı için segmentler 10'arlı (1 dk) parçalara birleşiyor: Worker'ın ücretsiz planında istek başına 50 alt istek var,
 # Releases'ın her dosyası yönlendirmeyle 2 sayılıyor; 6 sn'lik segmentlerle bir bağlantı ~2,5 dk, 1 dk'lık parçalarla ~25 dk sürüyor.
@@ -375,13 +375,19 @@ html, body {{ margin: 0; width: 600px; height: 900px; overflow: hidden; backgrou
 
 
 def logo_svg_html(svg, group):
-    """Kanalın özgün simgesi (`tools/logos/<kanal>.svg`, `currentColor`): grup renginde, şeffaf zeminde, tuvalin ortasında %75. Karo kendi
-    zeminini ve köşesini çiziyor (iOS ve Android'de logo karonun içine payla, sığdırılarak konuyor)."""
+    """Kanalın özgün simgesi (`tools/logos/<kanal>.svg`, `currentColor`): grup renginde, şeffaf zeminde, tuvali dolduruyor. Çizimin sınır
+    kutusu (en kalın konturun, 12, yarısı payıyla) ölçülüp `viewBox` yapılıyor, oran korunuyor. Payı karo veriyor (iOS ve Android'de kenarda 1/8): dosyada
+    ayrıca boşluk olunca 46'lık karoda simge ~%55'e iniyordu (Android, 27.11.2026)."""
     color = GROUP_COLORS.get(group, "#495057")
     return f"""<!doctype html><html><head><meta charset="utf-8"><style>
 html, body {{ margin: 0; width: 256px; height: 256px; overflow: hidden; background: transparent; }}
-svg {{ position: absolute; left: 32px; top: 32px; width: 192px; height: 192px; color: {color}; }}
-</style></head><body>{svg}</body></html>"""
+svg {{ position: absolute; left: 0; top: 0; width: 256px; height: 256px; color: {color}; }}
+</style></head><body>{svg}<script>
+const svg = document.querySelector("svg");
+const box = svg.getBBox();
+const pad = 6;
+svg.setAttribute("viewBox", `${{box.x - pad}} ${{box.y - pad}} ${{box.width + 2 * pad}} ${{box.height + 2 * pad}}`);
+</script></body></html>"""
 
 
 def logo_html(name, group, initials=None):
